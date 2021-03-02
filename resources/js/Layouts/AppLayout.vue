@@ -20,8 +20,29 @@
                                 <jet-nav-link :href="route('dashboard')" :active="route().current('dashboard')">
                                     {{ translate('general.menu.dashboard') }}
                                 </jet-nav-link>
-                                <jet-nav-link :href="route('timesheet')" :active="route().current('timesheet')" v-if="$page.props.permissions.include('MANAGE_ACTIVITY')">
+                                <jet-nav-link :href="route('timesheet.entry')" :active="route().current('timesheet.entry')" v-if="$page.props.permissions.includes('TIMEMANAGEMENT')">
                                     {{ translate('general.menu.timesheet') }}
+                                </jet-nav-link>
+                                <jet-nav-link :href="route('reporting.index')" :active="route().current('reporting.index')" v-if="$page.props.permissions.includes('REPORTING')">
+                                    {{ translate('general.menu.reporting') }}
+                                </jet-nav-link>
+                                <jet-nav-link :href="route('activities.index')" :active="route().current('activities.index')" v-if="$page.props.permissions.includes('MANAGE_ACTIVITIES')">
+                                    {{ translate('general.menu.activities') }}
+                                </jet-nav-link>
+                                <jet-nav-link :href="route('projects.index')" :active="route().current('projects.index')" v-if="$page.props.permissions.includes('MANAGE_PROJECTS')">
+                                    {{ translate('general.menu.projects') }}
+                                </jet-nav-link>
+                                <jet-nav-link :href="route('clients.index')" :active="route().current('clients.index')" v-if="$page.props.permissions.includes('MANAGE_CLIENTS')">
+                                    {{ translate('general.menu.clients') }}
+                                </jet-nav-link>
+                                <jet-nav-link :href="route('sla.index')" :active="route().current('sla.index')" v-if="$page.props.permissions.includes('MANAGE_SLA')">
+                                    {{ translate('general.menu.sla') }}
+                                </jet-nav-link>
+                                <jet-nav-link :href="route('invoicing.generate')" :active="route().current('invoicing.generate')" v-if="$page.props.permissions.includes('INVOICING')">
+                                    {{ translate('general.menu.invoicing') }}
+                                </jet-nav-link>
+                                <jet-nav-link :href="route('users.index')" :active="route().current('users.index')" v-if="$page.props.permissions.includes('HR')">
+                                    {{ translate('general.menu.users') }}
                                 </jet-nav-link>
                             </div>
                         </div>

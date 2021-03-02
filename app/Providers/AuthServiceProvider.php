@@ -25,6 +25,41 @@ class AuthServiceProvider extends ServiceProvider
     {
         $this->registerPolicies();
 
-        //
+        // define the roles
+        Gate::define('isAdmin', function($user) {
+           return $user->hasPermission('ADMIN');
+        });
+
+        Gate::define('manageClients', function($user) {
+            return $user->hasPermission('MANAGE_CLIENTS');
+        });
+
+        Gate::define('manageSla', function($user) {
+            return $user->hasPermission('MANAGE_SLA');
+        });
+
+        Gate::define('manageProjects', function($user) {
+            return $user->hasPermission('MANAGE_PROJECTS');
+        });
+
+        Gate::define('manageActivities', function($user) {
+            return $user->hasPermission('MANAGE_ACTIVITIES');
+        });
+
+        Gate::define('accessTimemanagement', function($user) {
+            return $user->hasPermission('TIMEMANAGEMENT');
+        });
+
+        Gate::define('viewReporting', function($user) {
+            return $user->hasPermission('REPORTING');
+        });
+
+        Gate::define('isHr', function($user) {
+            return $user->hasPermission('HR');
+        });
+
+        Gate::define('accessInvoicing', function($user) {
+            return $user->hasPermission('INVOICING');
+        });
     }
 }

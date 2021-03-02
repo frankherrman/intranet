@@ -4,8 +4,10 @@ namespace App\Models;
 
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Cache;
 use Laravel\Fortify\TwoFactorAuthenticatable;
 use Laravel\Jetstream\HasProfilePhoto;
 use Laravel\Sanctum\HasApiTokens;
@@ -17,6 +19,7 @@ class User extends Authenticatable
     use HasProfilePhoto;
     use Notifiable;
     use TwoFactorAuthenticatable;
+    use SoftDeletes;
 
     /**
      * The attributes that are mass assignable.
@@ -60,12 +63,19 @@ class User extends Authenticatable
     ];
 
     /**
+     * Make sure we only load the permissions once per request
+     *
+     * @var array
+     */
+    protected $permission_cache = [];
+
+    /**
      * Relation with permissions
      *
      * @return hasMany
      */
     public function permissions() {
-        return $this->hasMany(Permission::class, 'user_id', 'id');
+        return $this->belongsToMany(Permission::class);
     }
 
     /**
@@ -74,10 +84,28 @@ class User extends Authenticatable
      * @return array
      */
     public function getPermissions() {
-        $permissions = $this->permissions()->toArray();
-        if(in_array('ADMIN', $permissions)) {
-            return Permission::all()->toArray();
+        if(!empty($this->permission_cache)) {
+            return $this->permission_cache;
         }
-        return $permissions;
+        $this->permission_cache = $this->permissions()->get()->pluck('key', 'id')->toArray();
+        
+        if(in_array('ADMIN', $this->permission_cache)) {
+            $this->permission_cache = Cache::remember('all_permissions_list', 10, function() {
+                return Permission::all()->pluck('key', 'id')->toArray();
+            });
+        }
+        
+        return $this->permission_cache;
+    }
+
+    /**
+     * Check if user has a specific permission
+     *
+     * @param [type] $permission
+     * @return boolean
+     */
+    public function hasPermission($permission) {
+        $permissions = $this->getPermissions();
+        return in_array($permission, $permissions);
     }
 }

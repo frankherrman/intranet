@@ -4,8 +4,12 @@ return [
     'menu' => [
 		 'dashboard' => 'Dashboard',
 		 'timesheet' => 'Timesheet',
-		 'report' => 'Reports',
-		 'vacation_days' => 'Vacation',
-		 'invoices' => 'Invoices'
+		 'clients' => 'Clients',
+		 'sla' => 'SLA Contracts',
+		 'projects' => 'Projects',
+		 'activities' => 'Activities',
+		 'reporting' => 'Reports',
+		 'users' => 'Users',
+		 'invoicing' => 'Invoicing'
 	 ]
 ];

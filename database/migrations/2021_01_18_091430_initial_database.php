@@ -19,6 +19,7 @@ class InitialDatabase extends Migration
             $table->string('moneybird_customer_number')->nullable();
             $table->datetime('archived_at')->index()->nullable();
             $table->timestamps();
+            $table->softDeletes();
         });
 
         Schema::create('sla_contracts', function (Blueprint $table) {
@@ -31,6 +32,7 @@ class InitialDatabase extends Migration
             $table->date('start_date')->index();
             $table->text('description')->nullable();
             $table->timestamps();
+            $table->softDeletes();
         });
         Schema::table('sla_contracts', function(Blueprint $table) {
             $table->foreign('client_id')->references('id')->on('clients');
@@ -43,6 +45,7 @@ class InitialDatabase extends Migration
             $table->string('mysql_url');
             $table->boolean('is_shared')->default(0);
             $table->timestamps();
+            $table->softDeletes();
         });
 
         Schema::create('projects', function (Blueprint $table) {
@@ -52,20 +55,22 @@ class InitialDatabase extends Migration
             $table->string('name');
             $table->integer('year');
             $table->string('url')->nullable();
+            $table->boolean('open')->default(0);
             $table->integer('gitlab_id')->nullable();
             $table->timestamps();
+            $table->softDeletes();
         });
         Schema::table('projects', function (Blueprint $table) {
             $table->foreign('client_id')->references('id')->on('clients');
             $table->foreign('server_id')->references('id')->on('servers');
         });
 
-        Schema::create('project_sla_contracts', function (Blueprint $table) {
+        Schema::create('project_sla_contract', function (Blueprint $table) {
             $table->integer('project_id', false, true);
             $table->integer('sla_contract_id', false, true);
             $table->timestamps();
         });
-        Schema::table('project_sla_contracts', function (Blueprint $table) {
+        Schema::table('project_sla_contract', function (Blueprint $table) {
             $table->foreign('project_id')->references('id')->on('projects');
             $table->foreign('sla_contract_id')->references('id')->on('sla_contracts');
         });
@@ -86,6 +91,7 @@ class InitialDatabase extends Migration
             $table->increments('id');
             $table->string('name');
             $table->timestamps();
+            $table->softDeletes();
         });
         \DB::table('departments')->insert([
             ['name' => 'Marketing'],
@@ -109,16 +115,17 @@ class InitialDatabase extends Migration
             $table->boolean('available_wednesday_afternoon')->default(1)->index();
             $table->boolean('available_thursday_afternoon')->default(1)->index();
             $table->boolean('available_friday_afternoon')->default(1)->index();
+            $table->softDeletes();
         });
         Schema::table('employees', function (Blueprint $table) {
             $table->foreign('department_id')->references('id')->on('departments');
             $table->foreign('user_id')->references('id')->on('users');
         });
-        Schema::create('users_projects', function (Blueprint $table) {
+        Schema::create('project_user', function (Blueprint $table) {
             $table->integer('user_id', false, true);
             $table->integer('project_id', false, true);
         });
-        Schema::table('users_projects', function(Blueprint $table) {
+        Schema::table('project_user', function(Blueprint $table) {
             $table->foreign('user_id')->references('id')->on('users');
             $table->foreign('project_id')->references('id')->on('projects');
         });
@@ -128,6 +135,7 @@ class InitialDatabase extends Migration
             $table->integer('department_id', false, true);
             $table->string('name');
             $table->timestamps();
+            $table->softDeletes();
         });
         Schema::table('hour_types', function (Blueprint $table) {
             $table->foreign('department_id')->references('id')->on('departments');
@@ -166,6 +174,7 @@ class InitialDatabase extends Migration
             $table->increments('id');
             $table->string('name');
             $table->timestamps();
+            $table->softDeletes();
         });
         \DB::table('overhead_types')->insert([
             ['name' => 'Extended lunchbreak'],
@@ -180,11 +189,13 @@ class InitialDatabase extends Migration
             $table->increments('id');
             $table->integer('project_id', false, true);
             $table->integer('department_id', false, true);
+            $table->string('name');
             $table->float('budget', 12, 2)->nullable();
             $table->boolean('fixed_price')->default(1);
             $table->boolean('exempt_from_sla')->default(1);
             $table->integer('invoiced')->default(0)->comment('Percentage invoiced');
             $table->timestamps();
+            $table->softDeletes();
         });
         Schema::table('activities', function(Blueprint $table) {
             $table->foreign('project_id')->references('id')->on('projects');
@@ -200,10 +211,12 @@ class InitialDatabase extends Migration
             $table->date('date')->index();
             $table->float('hours', 6, 2);
             $table->boolean('billable')->default(1)->index();
+            $table->boolean('unforeseen')->default(0)->index();
             $table->string('description');
             $table->text('remarks')->nullable();
             $table->string('gitlab_ids')->nullable();
             $table->timestamps();
+            $table->softDeletes();
         });
         Schema::table('hours', function(Blueprint $table) {
             $table->foreign('user_id')->references('id')->on('users');
